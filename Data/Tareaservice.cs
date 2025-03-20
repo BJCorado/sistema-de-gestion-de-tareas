@@ -10,67 +10,115 @@ namespace gestion_de_tareas.Data
     {
         private readonly AgendaDBContext _context;
 
+        // Lista en memoria para simular la base de datos
+        private static List<Tarea> _tareasSimuladas = new List<Tarea>();
+
         public Tareaservice(AgendaDBContext context)
         {
             _context = context;
         }
 
-        // Método asíncrono para obtener tareas desde la base de datos
+        // Método asíncrono para obtener tareas desde la base de datos (o de la lista simulada)
         public async Task<List<Tarea>> ObtenerTareasAsync()
         {
-            return await _context.Tareas.OrderBy(t => t.Fecha).ThenBy(t => t.HoraInicio).ToListAsync();
+            // Si el contexto de la base de datos está disponible, obtenemos de allí
+            if (_context != null)
+            {
+                return await _context.Tareas.OrderBy(t => t.Fecha).ThenBy(t => t.HoraInicio).ToListAsync();
+            }
+            // Si no hay contexto (simulación), obtenemos de la lista en memoria
+            return _tareasSimuladas.OrderBy(t => t.Fecha).ThenBy(t => t.HoraInicio).ToList();
         }
 
-        // Método síncrono para obtener tareas (evita errores si aún no usas BD)
+        // Método síncrono para obtener tareas (simulado sin base de datos)
         public List<Tarea> ObtenerTareas()
         {
-            return new List<Tarea>
+            if (_context == null)
             {
-                new Tarea { Id = 1, Titulo = "Revisar correos", Descripcion = "Responder correos pendientes", Fecha = DateTime.Today, HoraInicio = new TimeSpan(9, 0, 0) },
-                new Tarea { Id = 2, Titulo = "Reunión con equipo", Descripcion = "Revisión de avances del proyecto", Fecha = DateTime.Today, HoraInicio = new TimeSpan(11, 0, 0) },
-                new Tarea { Id = 3, Titulo = "Actualizar reporte", Descripcion = "Actualizar informe semanal", Fecha = DateTime.Today, HoraInicio = new TimeSpan(14, 0, 0) }
-            };
+                // Si no hay base de datos, devolvemos las tareas simuladas en memoria
+                return _tareasSimuladas;
+            }
+
+            // Si tienes la base de datos, obtén las tareas reales
+            return _context.Tareas.OrderBy(t => t.Fecha).ThenBy(t => t.HoraInicio).ToList();
         }
 
-        // Agregar tarea a la BD
+        // Método para agregar tarea (usando la base de datos o en memoria)
         public async Task AgregarTareaAsync(Tarea tarea)
         {
-            _context.Tareas.Add(tarea);
-            await _context.SaveChangesAsync();
+            if (_context != null)
+            {
+                // Si tienes contexto (base de datos), agrega la tarea a la BD
+                _context.Tareas.Add(tarea);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // Si no tienes base de datos, agrega la tarea a la lista en memoria
+                _tareasSimuladas.Add(tarea);
+            }
         }
 
-        // Editar tarea existente en la BD
+        // Método para editar tarea (usando la base de datos o en memoria)
         public async Task EditarTareaAsync(Tarea tarea)
         {
-            _context.Entry(tarea).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            if (_context != null)
+            {
+                // Si tienes contexto (base de datos), edita la tarea en la BD
+                _context.Entry(tarea).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // Si no tienes base de datos, edita la tarea en memoria
+                var tareaExistente = _tareasSimuladas.FirstOrDefault(t => t.Id == tarea.Id);
+                if (tareaExistente != null)
+                {
+                    tareaExistente.Titulo = tarea.Titulo;
+                    tareaExistente.Descripcion = tarea.Descripcion;
+                    tareaExistente.Fecha = tarea.Fecha;
+                    tareaExistente.HoraInicio = tarea.HoraInicio;
+                }
+            }
         }
 
-        // Eliminar tarea por ID
+        // Método para eliminar tarea (usando la base de datos o en memoria)
         public async Task EliminarTareaAsync(int id)
         {
-            var tarea = await _context.Tareas.FindAsync(id);
-            if (tarea != null)
+            if (_context != null)
             {
-                _context.Tareas.Remove(tarea);
-                await _context.SaveChangesAsync();
+                // Si tienes contexto (base de datos), elimina la tarea de la BD
+                var tarea = await _context.Tareas.FindAsync(id);
+                if (tarea != null)
+                {
+                    _context.Tareas.Remove(tarea);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                // Si no tienes base de datos, elimina la tarea de la lista en memoria
+                var tarea = _tareasSimuladas.FirstOrDefault(t => t.Id == id);
+                if (tarea != null)
+                {
+                    _tareasSimuladas.Remove(tarea);
+                }
             }
         }
 
         // Obtener una tarea específica por ID
         public async Task<Tarea> ObtenerTareaPorIdAsync(int id)
         {
-            return await _context.Tareas.FindAsync(id);
-        }
-
-        internal Task AgregarTareaAsync(object nuevaTarea)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal Task EditarTareaAsync(object tareaEditada)
-        {
-            throw new NotImplementedException();
+            if (_context != null)
+            {
+                // Si tienes contexto (base de datos), busca la tarea en la BD
+                return await _context.Tareas.FindAsync(id);
+            }
+            else
+            {
+                // Si no tienes base de datos, busca la tarea en memoria
+                return _tareasSimuladas.FirstOrDefault(t => t.Id == id);
+            }
         }
 
         internal Tarea ObtenerTareaPorId(int id)

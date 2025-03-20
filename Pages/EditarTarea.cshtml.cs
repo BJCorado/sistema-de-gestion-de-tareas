@@ -7,23 +7,24 @@ namespace gestion_de_tareas.Pages
     public class EditarTareaModel : PageModel
     {
         private readonly Tareaservice _tareaService;
-        private Tarea tareaEditada;
 
         [BindProperty]
-        public Tarea TareaEditada { get; set; } = new();
+        public Tarea TareaEditada { get; set; }
 
         public EditarTareaModel(Tareaservice tareaService)
         {
             _tareaService = tareaService;
         }
 
-        public IActionResult OnGet(int id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            TareaEditada = _tareaService.ObtenerTareaPorId(id);
+            TareaEditada = await _tareaService.ObtenerTareaPorIdAsync(id);
+
             if (TareaEditada == null)
             {
-                return NotFound();
+                return NotFound(); // Si no se encuentra la tarea
             }
+
             return Page();
         }
 
@@ -31,12 +32,12 @@ namespace gestion_de_tareas.Pages
         {
             if (!ModelState.IsValid)
             {
-                return Page();
+                return Page(); // Si hay errores de validación, vuelve a mostrar el formulario
             }
 
-            await _tareaService.EditarTareaAsync(tareaEditada);
+            await _tareaService.EditarTareaAsync(TareaEditada); // Edita la tarea
 
-            return RedirectToPage("Agenda");
+            return RedirectToPage("Agenda"); // Redirige a la página de agenda después de editar la tarea
         }
     }
 }

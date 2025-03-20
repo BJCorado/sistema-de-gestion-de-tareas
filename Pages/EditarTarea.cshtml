@@ -7,7 +7,21 @@
 <h2>Editar Tarea</h2>
 
 <form method="post">
-    <input asp-for="TareaEditada.Titulo" placeholder="Nuevo título" />
-    <button type="submit">Guardar</button>
+    <div class="form-group">
+        <label for="Titulo">Título</label>
+        <input type="text" id="Titulo" class="form-control" asp-for="TareaEditada.Titulo" />
+    </div>
+    <div class="form-group">
+        <label for="Descripcion">Descripción</label>
+        <input type="text" id="Descripcion" class="form-control" asp-for="TareaEditada.Descripcion" />
+    </div>
+    <div class="form-group">
+        <label for="Fecha">Fecha</label>
+        <input type="date" id="Fecha" class="form-control" asp-for="TareaEditada.Fecha" />
+    </div>
+    <div class="form-group">
+        <label for="HoraInicio">Hora de inicio</label>
+        <input type="time" id="HoraInicio" class="form-control" asp-for="TareaEditada.HoraInicio" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
 </form>
-

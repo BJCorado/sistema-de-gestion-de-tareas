@@ -9,7 +9,7 @@
 <ul>
     @foreach (var tarea in Model.Tareas)
     {
-        <li>@tarea.Titulo - @tarea.Fecha</li>
+        <li>@tarea.Titulo - @tarea.Fecha.ToShortDateString()</li>
     }
 </ul>
-    }
+    
