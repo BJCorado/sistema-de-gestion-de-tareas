@@ -4,29 +4,36 @@
     ViewData["Title"] = "Agregar Tarea";
 }
 
-<h2>Agregar Tarea</h2>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card p-4 shadow-lg" style="width: 100%; max-width: 500px;">
+        <h2 class="text-center mb-4">Agregar Tarea</h2>
 
-<form method="post">
-    <div class="form-group" style="margin-bottom: 15px;">
-        <label for="Titulo">Título</label>
-        <input type="text" id="Titulo" class="form-control" asp-for="NuevaTarea.Titulo" />
+        <form method="post">
+            <div class="form-group mb-4">
+                <label for="Titulo" class="form-label">Título</label>
+                <input type="text" id="Titulo" class="form-control" asp-for="NuevaTarea.Titulo" required />
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="Descripcion" class="form-label">Descripción</label>
+                <input type="text" id="Descripcion" class="form-control" asp-for="NuevaTarea.Descripcion" required />
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="Fecha" class="form-label">Fecha</label>
+                <input type="date" id="Fecha" class="form-control" asp-for="NuevaTarea.Fecha" required />
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="HoraInicio" class="form-label">Hora de inicio</label>
+                <input type="time" id="HoraInicio" class="form-control" asp-for="NuevaTarea.HoraInicio" required />
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Agregar Tarea</button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="form-group" style="margin-bottom: 15px;">
-        <label for="Descripcion">Descripción</label>
-        <input type="text" id="Descripcion" class="form-control" asp-for="NuevaTarea.Descripcion" />
-    </div>
-
-    <div class="form-group" style="margin-bottom: 15px;">
-        <label for="Fecha">Fecha</label>
-        <input type="date" id="Fecha" class="form-control" asp-for="NuevaTarea.Fecha" />
-    </div>
-
-    <div class="form-group" style="margin-bottom: 15px;">
-        <label for="HoraInicio">Hora de inicio</label>
-        <input type="time" id="HoraInicio" class="form-control" asp-for="NuevaTarea.HoraInicio" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Agregar Tarea</button>
-</form>
 
