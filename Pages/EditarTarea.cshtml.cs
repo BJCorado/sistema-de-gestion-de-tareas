@@ -7,6 +7,7 @@ namespace gestion_de_tareas.Pages
     public class EditarTareaModel : PageModel
     {
         private readonly Tareaservice _tareaService;
+        private Tarea tareaEditada;
 
         [BindProperty]
         public Tarea TareaEditada { get; set; } = new();
@@ -26,14 +27,15 @@ namespace gestion_de_tareas.Pages
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _tareaService.EditarTarea(TareaEditada);
+            await _tareaService.EditarTareaAsync(tareaEditada);
+
             return RedirectToPage("Agenda");
         }
     }

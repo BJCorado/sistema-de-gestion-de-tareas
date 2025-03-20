@@ -7,6 +7,7 @@ namespace gestion_de_tareas.Pages
     public class AgregarTareaModel : PageModel
     {
         private readonly Tareaservice _tareaService;
+        private Tarea nuevaTarea;
 
         [BindProperty]
         public Tarea NuevaTarea { get; set; } = new();
@@ -16,14 +17,15 @@ namespace gestion_de_tareas.Pages
             _tareaService = tareaService;
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _tareaService.AgregarTarea(NuevaTarea);
+            await _tareaService.AgregarTareaAsync(nuevaTarea);
+
             return RedirectToPage("Agenda");
         }
     }
