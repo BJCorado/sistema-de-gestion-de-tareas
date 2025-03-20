@@ -1,4 +1,3 @@
-
 using gestion_de_tareas.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,8 +28,20 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
+// Redirigir automáticamente al Login cuando la aplicación inicie
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/")
+    {
+        context.Response.Redirect("/Login");
+        return;
+    }
+    await next();
+});
+
 // Mapear Razor Pages
 app.MapRazorPages();
 
 app.Run();
+
 
