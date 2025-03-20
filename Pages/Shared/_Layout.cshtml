@@ -11,18 +11,58 @@
   
     <link rel="stylesheet" href="@Url.Content("~/css/site.css")" />
 
+    <style>
+        /* Ajustar todo el contenido para ocupar toda la pantalla */
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header fijo en la parte superior */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #007bff; /* Azul Bootstrap */
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        /* Agregar margen superior al contenido para evitar que quede debajo del header */
+        .content {
+            flex: 1;
+            margin-top: 80px; /* Ajustar según la altura del header */
+            padding: 20px;
+        }
+
+        /* Footer pegado abajo */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #343a40; /* Gris oscuro Bootstrap */
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+    </style>
 </head>
 <body>
-    <header class="bg-primary text-white text-center py-3">
+    <header>
         <h1>Gestión de Tareas</h1>
     </header>
 
-    <div class="container mt-4">
+    <div class="content">
         @RenderBody()
     </div>
 
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <p>© 2025 Mi Aplicación</p>
+    <footer>
+        <p>© 2025 Grupo No.3</p>
     </footer>
 
     @RenderSection("Scripts", required: false)
