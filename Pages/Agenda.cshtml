@@ -1,0 +1,15 @@
+﻿@page "/Agenda"
+@model gestion_de_tareas.Pages.AgendaModel
+@{
+    ViewData["Title"] = "Agenda";
+}
+
+<h2>Lista de Tareas</h2>
+
+<ul>
+    @foreach (var tarea in Model.Tareas)
+    {
+        <li>@tarea.Titulo - @tarea.Fecha</li>
+    }
+</ul>
+    }

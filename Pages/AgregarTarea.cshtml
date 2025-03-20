@@ -1,0 +1,12 @@
+﻿@page "/AgregarTarea"
+@model gestion_de_tareas.Pages.AgregarTareaModel
+@{
+    ViewData["Title"] = "Agregar Tarea";
+}
+
+<h2>Agregar Nueva Tarea</h2>
+
+<form method="post">
+    <input asp-for="NuevaTarea.Titulo" placeholder="Título de la tarea" />
+    <button type="submit">Agregar</button>
+</form>
