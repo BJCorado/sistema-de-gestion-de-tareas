@@ -4,12 +4,25 @@
     ViewData["Title"] = "Agenda";
 }
 
-<h2>Lista de Tareas</h2>
+<h2 class="text-center">Lista de Tareas</h2>
 
-<ul>
-    @foreach (var tarea in Model.Tareas)
-    {
-        <li>@tarea.Titulo - @tarea.Fecha.ToShortDateString()</li>
-    }
-</ul>
+<div class="container">
+    <div class="row">
+        @foreach (var tarea in Model.Tareas)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@tarea.Titulo</h5>
+                        <p class="card-text">Fecha: @tarea.Fecha.ToShortDateString()</p>
+                        <p class="card-text">Descripción: @tarea.Descripcion</p>
+                        <a href="#" class="btn btn-primary">Editar</a>
+                        <a href="#" class="btn btn-danger">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
     
