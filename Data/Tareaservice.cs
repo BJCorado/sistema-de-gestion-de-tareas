@@ -61,15 +61,6 @@ namespace gestion_de_tareas.Data
             }
             return Task.CompletedTask;
         }
-        public void ActualizarTarea(Tarea tareaActualizada)
-        {
-            var tarea = _tareasSimuladas.FirstOrDefault(t => t.Id == tareaActualizada.Id);
-            if (tarea != null)
-            {
-                tarea.Estado = tareaActualizada.Estado;
-            }
-        }
-
 
         // Obtener una tarea específica por ID desde la lista simulada
         public Task<Tarea> ObtenerTareaPorIdAsync(int id)
