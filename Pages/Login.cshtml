@@ -1,10 +1,10 @@
 ﻿@page
-@model LoginModel
+@model gestion_de_tareas.Pages.LoginModel
 @{
     ViewData["Title"] = "Iniciar Sesión";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2 class="text-center">Iniciar Sesión</h2>
 
 <form method="post">
     <div class="form-group">
@@ -22,4 +22,6 @@
 {
     <div class="alert alert-danger mt-2">@Model.ErrorMessage</div>
 }
+
+<p class="mt-3">¿No tienes cuenta? <a href="/Registro">Regístrate aquí</a></p>
 
