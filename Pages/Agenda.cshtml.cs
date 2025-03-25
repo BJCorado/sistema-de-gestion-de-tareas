@@ -14,6 +14,21 @@ namespace gestion_de_tareas.Pages
         {
             _tareaService = tareaService;
         }
+        [HttpPost]
+        public IActionResult OnPostActualizarEstadoTarea(int id, string estado)
+        {
+            var tarea = _tareaService.ObtenerTareas().FirstOrDefault(t => t.Id == id);
+            if (tarea == null)
+            {
+                return NotFound(new { mensaje = "Tarea no encontrada" });
+            }
+
+            tarea.Estado = estado;
+            _tareaService.ActualizarTarea(tarea);
+
+            return new JsonResult(new { mensaje = "Estado actualizado con éxito" });
+        }
+
 
         public void OnGet()
         {
