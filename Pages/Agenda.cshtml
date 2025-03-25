@@ -4,25 +4,105 @@
     ViewData["Title"] = "Agenda";
 }
 
-<h2 class="text-center">Lista de Tareas</h2>
+<h2 class="text-center">Tablero de Tareas</h2>
 
 <div class="container">
     <div class="row">
-        @foreach (var tarea in Model.Tareas)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">@tarea.Titulo</h5>
-                        <p class="card-text">Fecha: @tarea.Fecha.ToShortDateString()</p>
-                        <p class="card-text">Descripción: @tarea.Descripcion</p>
-                        <a href="#" class="btn btn-primary">Editar</a>
-                        <a href="#" class="btn btn-danger">Eliminar</a>
+        <div class="col-md-4">
+            <h4>Por hacer</h4>
+            <div id="todo" class="task-column">
+                @foreach (var tarea in Model.Tareas.Where(t => t.Estado == "Por hacer"))
+                {
+                    <div class="task-card" ondblclick="editTask('@tarea.Id')">
+                        <h5>@tarea.Titulo</h5>
+                        <p>Fecha: @tarea.Fecha.ToShortDateString()</p>
+                        <p>@tarea.Descripcion</p>
                     </div>
-                </div>
+                }
             </div>
-        }
+        </div>
+
+        <div class="col-md-4">
+            <h4>En progreso</h4>
+            <div id="inProgress" class="task-column">
+                @foreach (var tarea in Model.Tareas.Where(t => t.Estado == "En progreso"))
+                {
+                    <div class="task-card" ondblclick="editTask('@tarea.Id')">
+                        <h5>@tarea.Titulo</h5>
+                        <p>Fecha: @tarea.Fecha.ToShortDateString()</p>
+                        <p>@tarea.Descripcion</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <h4>Completado</h4>
+            <div id="done" class="task-column">
+                @foreach (var tarea in Model.Tareas.Where(t => t.Estado == "Completado"))
+                {
+                    <div class="task-card" ondblclick="editTask('@tarea.Id')">
+                        <h5>@tarea.Titulo</h5>
+                        <p>Fecha: @tarea.Fecha.ToShortDateString()</p>
+                        <p>@tarea.Descripcion</p>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let columns = ["todo", "inProgress", "done"];
+            columns.forEach(id => {
+                new Sortable(document.getElementById(id), {
+                    group: "tasks",
+                    animation: 150,
+                    onEnd: function (evt) {
+                        let taskId = evt.item.getAttribute("data-id");
+                        let newStatus = evt.to.id;
+                        updateTaskStatus(taskId, newStatus);
+                    }
+                });
+            });
+        });
+
+        function updateTaskStatus(taskId, newStatus) {
+            fetch(`/ActualizarEstadoTarea?id=${taskId}&estado=${newStatus}`, { method: "POST" })
+                .then(response => response.json())
+                .then(data => console.log("Estado actualizado:", data))
+                .catch(error => console.error("Error:", error));
+        }
+
+        function editTask(taskId) {
+            window.location.href = `/EditarTarea?id=${taskId}`;
+        }
+    </script>
+}
+
+<style>
+    .task-column {
+        background: #f4f4f4;
+        min-height: 300px;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .task-card {
+        background: white;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        cursor: grab;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+        .task-card:hover {
+            background: #f0f0f0;
+        }
+</style>
 
     

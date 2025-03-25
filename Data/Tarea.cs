@@ -9,6 +9,9 @@
         public DateTime Fecha { get; set; }
             public TimeSpan HoraInicio { get; set; }
             public TimeSpan HoraFin { get; set; }
-        }
+
+        // propiedad para clasificar las tareas en columnas
+        public string Estado { get; set; } = "Por hacer"; // Valor por defecto
+    }
 
     }
