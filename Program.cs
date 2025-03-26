@@ -10,6 +10,9 @@ builder.Services.AddDbContext<AgendaDBContext>(options =>
 // Registrar el servicio Tareaservice
 builder.Services.AddScoped<Tareaservice>();
 
+// Registrar el servicio Usuarioservice
+builder.Services.AddScoped<UsuarioService>();
+
 // Agregar Razor Pages
 builder.Services.AddRazorPages();
 
