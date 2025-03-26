@@ -34,9 +34,28 @@ namespace gestion_de_tareas.Data
         // Editar una tarea en la base de datos
         public async Task EditarTareaAsync(Tarea tarea)
         {
-            _context.Tareas.Update(tarea);
-            await _context.SaveChangesAsync();
+            // Verifica si la tarea ya existe en la base de datos
+            var tareaExistente = await _context.Tareas.FindAsync(tarea.Id);
+            if (tareaExistente != null)
+            {
+                // Actualiza las propiedades de la tarea existente con los nuevos valores
+                tareaExistente.Titulo = tarea.Titulo;
+                tareaExistente.Descripcion = tarea.Descripcion;
+                tareaExistente.Fecha = tarea.Fecha;
+                tareaExistente.HoraInicio = tarea.HoraInicio;
+                tareaExistente.HoraFin = tarea.HoraFin;
+                tareaExistente.Estado = tarea.Estado;
+
+                // Guarda los cambios en la base de datos
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // Si la tarea no existe, podrías lanzar un error o manejarlo de alguna manera
+                throw new Exception("La tarea que intentas editar no existe.");
+            }
         }
+
 
         // Eliminar una tarea de la base de datos
         public async Task EliminarTareaAsync(int id)
