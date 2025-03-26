@@ -1,6 +1,7 @@
 using gestion_de_tareas.Data;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace gestion_de_tareas.Pages
 {
@@ -8,17 +9,18 @@ namespace gestion_de_tareas.Pages
     {
         private readonly Tareaservice _tareaService;
 
-        public List<Tarea> Tareas { get; set; }
+        public List<Tarea> Tareas { get; set; } = new();
 
         public AgendaModel(Tareaservice tareaService)
         {
             _tareaService = tareaService;
         }
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
-            // Utilizar la simulación de tareas en memoria en lugar de la base de datos
-            Tareas = _tareaService.ObtenerTareas();
+            // Obtener las tareas de la base de datos de manera asíncrona
+            Tareas = await _tareaService.ObtenerTareasAsync();
         }
     }
 }
+

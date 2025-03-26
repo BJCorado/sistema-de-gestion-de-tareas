@@ -2,71 +2,57 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace gestion_de_tareas.Data
 {
     public class Tareaservice
     {
-        // Lista en memoria para simular la base de datos
-        private static List<Tarea> _tareasSimuladas = new List<Tarea>
-        {
-            new Tarea { Id = 1, Titulo = "Revisar correos", Descripcion = "Responder correos pendientes", Fecha = DateTime.Today, HoraInicio = new TimeSpan(9, 0, 0) },
-            new Tarea { Id = 2, Titulo = "Reunión con equipo", Descripcion = "Revisión de avances del proyecto", Fecha = DateTime.Today, HoraInicio = new TimeSpan(11, 0, 0) },
-            new Tarea { Id = 3, Titulo = "Actualizar reporte", Descripcion = "Actualizar informe semanal", Fecha = DateTime.Today, HoraInicio = new TimeSpan(14, 0, 0) }
-        };
+        private readonly AgendaDBContext _context;
 
-        // Obtener todas las tareas (solo desde la lista simulada)
-        public Task<List<Tarea>> ObtenerTareasAsync()
+        public Tareaservice(AgendaDBContext context)
         {
-            // Retorna las tareas simuladas ordenadas por fecha y hora de inicio
-            return Task.FromResult(_tareasSimuladas.OrderBy(t => t.Fecha).ThenBy(t => t.HoraInicio).ToList());
+            _context = context;
         }
 
-        // Obtener todas las tareas (solo desde la lista simulada)
-        public List<Tarea> ObtenerTareas()
+        // Obtener todas las tareas desde la base de datos
+        public async Task<List<Tarea>> ObtenerTareasAsync()
         {
-            return _tareasSimuladas.OrderBy(t => t.Fecha).ThenBy(t => t.HoraInicio).ToList();
+            return await _context.Tareas
+                .OrderBy(t => t.Fecha)
+                .ThenBy(t => t.HoraInicio)
+                .ToListAsync();
         }
 
-        // Agregar tarea a la lista simulada
-        public Task AgregarTareaAsync(Tarea tarea)
+        // Agregar una tarea a la base de datos
+        public async Task AgregarTareaAsync(Tarea tarea)
         {
-            // Asigna un ID automáticamente (en caso de que se agregue una nueva tarea sin ID)
-            tarea.Id = _tareasSimuladas.Max(t => t.Id) + 1;
-            _tareasSimuladas.Add(tarea);
-            return Task.CompletedTask;
+            _context.Tareas.Add(tarea);
+            await _context.SaveChangesAsync();
         }
 
-        // Editar tarea en la lista simulada
-        public Task EditarTareaAsync(Tarea tarea)
+        // Editar una tarea en la base de datos
+        public async Task EditarTareaAsync(Tarea tarea)
         {
-            var tareaExistente = _tareasSimuladas.FirstOrDefault(t => t.Id == tarea.Id);
-            if (tareaExistente != null)
-            {
-                tareaExistente.Titulo = tarea.Titulo;
-                tareaExistente.Descripcion = tarea.Descripcion;
-                tareaExistente.Fecha = tarea.Fecha;
-                tareaExistente.HoraInicio = tarea.HoraInicio;
-            }
-            return Task.CompletedTask;
+            _context.Tareas.Update(tarea);
+            await _context.SaveChangesAsync();
         }
 
-        // Eliminar tarea de la lista simulada
-        public Task EliminarTareaAsync(int id)
+        // Eliminar una tarea de la base de datos
+        public async Task EliminarTareaAsync(int id)
         {
-            var tarea = _tareasSimuladas.FirstOrDefault(t => t.Id == id);
+            var tarea = await _context.Tareas.FindAsync(id);
             if (tarea != null)
             {
-                _tareasSimuladas.Remove(tarea);
+                _context.Tareas.Remove(tarea);
+                await _context.SaveChangesAsync();
             }
-            return Task.CompletedTask;
         }
 
-        // Obtener una tarea específica por ID desde la lista simulada
-        public Task<Tarea> ObtenerTareaPorIdAsync(int id)
+        // Obtener una tarea específica por ID desde la base de datos
+        public async Task<Tarea> ObtenerTareaPorIdAsync(int id)
         {
-            var tarea = _tareasSimuladas.FirstOrDefault(t => t.Id == id);
-            return Task.FromResult(tarea);
+            return await _context.Tareas.FindAsync(id);
         }
     }
 }
