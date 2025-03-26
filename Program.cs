@@ -3,9 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registrar DbContext con la cadena de conexión
+// Registrar DbContext con la cadena de conexión a MySQL
 builder.Services.AddDbContext<AgendaDBContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
 // Registrar el servicio Tareaservice
 builder.Services.AddScoped<Tareaservice>();
