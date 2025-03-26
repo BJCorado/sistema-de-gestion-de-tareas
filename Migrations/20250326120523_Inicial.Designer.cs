@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using gestion_de_tareas.Data;
 
@@ -10,9 +11,11 @@ using gestion_de_tareas.Data;
 namespace gestiondetareas.Migrations
 {
     [DbContext(typeof(AgendaDBContext))]
-    partial class AgendaDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250326120523_Inicial")]
+    partial class Inicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

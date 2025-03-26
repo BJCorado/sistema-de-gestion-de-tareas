@@ -21,43 +21,39 @@ namespace gestiondetareas.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.2")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("gestion_de_tareas.Data.Tarea", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                b.Property<string>("Descripcion")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Estado")
+                    .IsRequired()
+                    .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<DateTime>("Fecha")
+                    .HasColumnType("datetime");
 
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                b.Property<TimeSpan>("HoraFin")
+                    .HasColumnType("time");
 
-                    b.Property<TimeSpan>("HoraFin")
-                        .HasColumnType("time");
+                b.Property<TimeSpan>("HoraInicio")
+                    .HasColumnType("time");
 
-                    b.Property<TimeSpan>("HoraInicio")
-                        .HasColumnType("time");
+                b.Property<string>("Titulo")
+                    .IsRequired()
+                    .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Titulo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.HasKey("Id");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("Tareas");
-                });
+                b.ToTable("Tareas");
+            });
 #pragma warning restore 612, 618
         }
     }

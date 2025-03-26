@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace gestiondetareas.Migrations
 {
-    /// <inheritdoc />
     public partial class AgregarUsuarios : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -16,13 +14,13 @@ namespace gestiondetareas.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Titulo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                        .Annotation("MySQL:AutoIncrement", true),  // Cambiado para MariaDB
+                    Titulo = table.Column<string>(type: "varchar(255)", nullable: false),  // Cambiado de nvarchar(max) a varchar(255)
+                    Descripcion = table.Column<string>(type: "varchar(255)", nullable: false),  // Cambiado de nvarchar(max) a varchar(255)
+                    Fecha = table.Column<DateTime>(type: "datetime", nullable: false),  // Cambiado de datetime2 a datetime
                     HoraInicio = table.Column<TimeSpan>(type: "time", nullable: false),
                     HoraFin = table.Column<TimeSpan>(type: "time", nullable: false),
-                    Estado = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Estado = table.Column<string>(type: "varchar(255)", nullable: false)  // Cambiado de nvarchar(max) a varchar(255)
                 },
                 constraints: table =>
                 {
@@ -30,7 +28,6 @@ namespace gestiondetareas.Migrations
                 });
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
