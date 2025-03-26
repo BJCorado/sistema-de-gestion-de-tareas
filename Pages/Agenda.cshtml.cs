@@ -1,4 +1,5 @@
 using gestion_de_tareas.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,6 +15,11 @@ namespace gestion_de_tareas.Pages
         public AgendaModel(Tareaservice tareaService)
         {
             _tareaService = tareaService;
+        }
+        public async Task<IActionResult> OnPostEliminarAsync(int id)
+        {
+            await _tareaService.EliminarTareaAsync(id);
+            return RedirectToPage();
         }
 
         public async Task OnGetAsync()
