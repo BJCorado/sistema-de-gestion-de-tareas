@@ -1,9 +1,10 @@
-using gestion_de_tareas.Data;
+锘縰sing gestion_de_tareas.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registrar DbContext con la cadena de conexi髇 a MySQL
+// Registrar DbContext con la cadena de conexi贸n a MySQL
 builder.Services.AddDbContext<AgendaDBContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
@@ -16,6 +17,17 @@ builder.Services.AddScoped<UsuarioService>();
 
 // Agregar Razor Pages
 builder.Services.AddRazorPages();
+
+// 馃敼 Agregar soporte para sesiones
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tiempo de inactividad antes de que expire la sesi贸n
+    options.Cookie.HttpOnly = true; // Solo accesible desde HTTP
+    options.Cookie.IsEssential = true; // Esencial para el funcionamiento del sistema
+});
+
+// 馃敼 Agregar servicio para acceder a la sesi贸n
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();
 
@@ -30,9 +42,13 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// 馃敼 Habilitar sesiones en la aplicaci贸n
+app.UseSession();
+
 app.UseAuthorization();
 
-// Redirigir autom醫icamente al Login cuando la aplicaci髇 inicie
+// Redirigir autom谩ticamente al Login cuando la aplicaci贸n inicie
 app.Use(async (context, next) =>
 {
     if (context.Request.Path == "/")

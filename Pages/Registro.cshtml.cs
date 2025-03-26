@@ -1,38 +1,53 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using gestion_de_tareas.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace gestion_de_tareas.Pages
 {
     public class RegistroModel : PageModel
     {
-        public static List<Usuario> UsuariosRegistrados = new List<Usuario>();
+        private readonly AgendaDBContext _context;
 
+        public RegistroModel(AgendaDBContext context)
+        {
+            _context = context;
+        }
+
+        public static List<Usuario> UsuariosRegistrados { get; internal set; }
         [BindProperty]
         public string Username { get; set; }
+
         [BindProperty]
         public string Email { get; set; }
+
         [BindProperty]
         public string Password { get; set; }
+
         public string ErrorMessage { get; set; }
         public string SuccessMessage { get; set; }
 
-        public void OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (UsuariosRegistrados.Exists(u => u.Username == Username))
+            if (_context.Usuarios.Any(u => u.Nombre == Username))
             {
                 ErrorMessage = "El usuario ya está registrado.";
-                return;
+                return Page();
             }
 
-            UsuariosRegistrados.Add(new Usuario { Username = Username, Email = Email, Password = Password });
-            SuccessMessage = "Registro exitoso. Ahora puedes iniciar sesión.";
-        }
-    }
+            var nuevoUsuario = new Usuario
+            {
+                Nombre = Username,
+                Correo = Email,
+                Contraseña = Password
+            };
 
-    public class Usuario
-    {
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
+            _context.Usuarios.Add(nuevoUsuario);
+            await _context.SaveChangesAsync();
+
+            SuccessMessage = "Registro exitoso. Ahora puedes iniciar sesión.";
+            return Page();
+        }
     }
 }
