@@ -5,6 +5,9 @@
 }
 
 <h2 class="text-center">Tablero de Tareas</h2>
+<form method="post">
+    @Html.AntiForgeryToken()
+</form>
 
 <!-- Buscador de tareas por estado -->
 <div class="container mb-3">
@@ -19,65 +22,28 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-4">
-            <h4>Por hacer</h4>
-            <div id="todo" class="task-column">
-                @foreach (var tarea in Model.Tareas.Where(t => t.Estado == "Por hacer"))
-                {
-                    <div class="task-card task-item" data-estado="@tarea.Estado" ondblclick="editTask('@tarea.Id')">
-                        <h5>@tarea.Titulo</h5>
-                        <p>Fecha: @tarea.Fecha.ToShortDateString()</p>
-                        <p>Hora: @tarea.HoraInicio.ToString(@"hh\:mm")</p>
-                        <p>@tarea.Descripcion</p>
+        @foreach (var estado in new[] { "Por hacer", "En progreso", "Completado" })
+        {
+            <div class="col-md-4">
+                <h4>@estado</h4>
+                <div id="@(estado == "Por hacer" ? "todo" : estado == "En progreso" ? "inProgress" : "done")" class="task-column">
+                    @foreach (var tarea in Model.Tareas.Where(t => t.Estado == estado))
+                    {
+                        <div class="task-card task-item" data-id="@tarea.Id" data-estado="@tarea.Estado" ondblclick="editTask(@tarea.Id)">
+                            <h5>@tarea.Titulo</h5>
+                            <p>Fecha: @tarea.Fecha.ToShortDateString()</p>
+                            <p>Hora: @tarea.HoraInicio.ToString(@"hh\:mm")</p>
+                            <p>@tarea.Descripcion</p>
 
-                        <!-- Botón de eliminar -->
-                        <form method="post" asp-page-handler="Eliminar" asp-route-id="@tarea.Id" style="display:inline;">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">Eliminar</button>
-                        </form>
-                    </div>
-                }
+                            <!-- Botón de eliminar -->
+                            <form method="post" asp-page-handler="Eliminar" asp-route-id="@tarea.Id" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">Eliminar</button>
+                            </form>
+                        </div>
+                    }
+                </div>
             </div>
-        </div>
-
-        <div class="col-md-4">
-            <h4>En progreso</h4>
-            <div id="inProgress" class="task-column">
-                @foreach (var tarea in Model.Tareas.Where(t => t.Estado == "En progreso"))
-                {
-                    <div class="task-card task-item" data-estado="@tarea.Estado" ondblclick="editTask('@tarea.Id')">
-                        <h5>@tarea.Titulo</h5>
-                        <p>Fecha: @tarea.Fecha.ToShortDateString()</p>
-                        <p>Hora: @tarea.HoraInicio.ToString(@"hh\:mm")</p>
-                        <p>@tarea.Descripcion</p>
-
-                        <!-- Botón de eliminar -->
-                        <form method="post" asp-page-handler="Eliminar" asp-route-id="@tarea.Id" style="display:inline;">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">Eliminar</button>
-                        </form>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <h4>Completado</h4>
-            <div id="done" class="task-column">
-                @foreach (var tarea in Model.Tareas.Where(t => t.Estado == "Completado"))
-                {
-                    <div class="task-card task-item" data-estado="@tarea.Estado" ondblclick="editTask('@tarea.Id')">
-                        <h5>@tarea.Titulo</h5>
-                        <p>Fecha: @tarea.Fecha.ToShortDateString()</p>
-                        <p>Hora: @tarea.HoraInicio.ToString(@"hh\:mm")</p>
-                        <p>@tarea.Descripcion</p>
-
-                        <!-- Botón de eliminar -->
-                        <form method="post" asp-page-handler="Eliminar" asp-route-id="@tarea.Id" style="display:inline;">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">Eliminar</button>
-                        </form>
-                    </div>
-                }
-            </div>
-        </div>
+        }
     </div>
 </div>
 
@@ -86,25 +52,79 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let columns = ["todo", "inProgress", "done"];
+
             columns.forEach(id => {
                 new Sortable(document.getElementById(id), {
                     group: "tasks",
                     animation: 150,
                     onEnd: function (evt) {
-                        let taskId = evt.item.getAttribute("data-id");
-                        let newStatus = evt.to.id;
-                        updateTaskStatus(taskId, newStatus);
+                        let taskId = evt.item.dataset.id;  // Usa dataset en vez de getAttribute
+                        let newStatus = mapColumnToStatus(evt.to.id);
+
+                        console.log("Moviendo tarea ID:", taskId, "Nuevo estado:", newStatus);
+
+                        if (taskId) { // Solo llama a fetch si hay un ID válido
+                            updateTaskStatus(taskId, newStatus);
+                        } else {
+                            console.error("Error: No se pudo obtener el ID de la tarea.");
+                        }
                     }
                 });
             });
         });
 
-        function updateTaskStatus(taskId, newStatus) {
-            fetch(`/ActualizarEstadoTarea?id=${taskId}&estado=${newStatus}`, { method: "POST" })
-                .then(response => response.json())
-                .then(data => console.log("Estado actualizado:", data))
-                .catch(error => console.error("Error:", error));
+        function mapColumnToStatus(columnId) {
+            switch (columnId) {
+                case "todo": return "Por hacer";
+                case "inProgress": return "En progreso";
+                case "done": return "Completado"; // Corregido error de capitalización
+                default: return "Por hacer";
+            }
         }
+
+        function updateTaskStatus(taskId, newStatus) {
+            if (!taskId) {
+                console.error(" Error: ID de tarea no válido, no se enviará la actualización.");
+                return;
+            }
+
+            // Obtener el token anti-forgery del formulario oculto
+            let tokenInput = document.querySelector("input[name='__RequestVerificationToken']");
+            let token = tokenInput ? tokenInput.value : null;
+
+            if (!token) {
+                console.error(" No se encontró el token de seguridad.");
+                return;
+            }
+
+            let payload = { id: parseInt(taskId), estado: newStatus };
+            console.log("Enviando a backend:", payload);
+
+            fetch("/Agenda?handler=ActualizarEstado", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": token  //  Enviamos el token
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(` Error en la respuesta: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log("Estado actualizado correctamente:", data);
+                        document.querySelector(`[data-id='${taskId}']`).setAttribute("data-estado", newStatus); // Actualiza el `data-estado`
+                    } else {
+                        console.error(" Error en la actualización:", data);
+                    }
+                })
+                .catch(error => console.error("Error en la petición:", error));
+        }
+
 
         function editTask(taskId) {
             window.location.href = `/EditarTarea/${taskId}`;
@@ -116,12 +136,7 @@
 
             tasks.forEach(task => {
                 let taskState = task.getAttribute("data-estado").trim();
-
-                if (selectedState === "all" || taskState === selectedState) {
-                    task.style.display = "flex";
-                } else {
-                    task.style.display = "none";
-                }
+                task.style.display = (selectedState === "all" || taskState === selectedState) ? "flex" : "none";
             });
         }
     </script>
