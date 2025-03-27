@@ -28,6 +28,10 @@ namespace gestion_de_tareas.Data
         // Propiedad para clasificar las tareas en columnas
         [Required]
         public string Estado { get; set; } = "Por hacer"; // Valor por defecto
+
+        // Clave foránea que referencia la tabla Usuarios
+        public int UsuarioId { get; set; }
+        public Usuario Usuario { get; set; }  // Relación con la tabla Usuarios
     }
 }
 

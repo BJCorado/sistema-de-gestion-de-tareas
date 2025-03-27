@@ -15,5 +15,9 @@ namespace gestion_de_tareas.Data
 
         [Required]
         public string Contraseña { get; set; }
+
+        // Relación con las tareas (un usuario puede tener muchas tareas)
+        public ICollection<Tarea> Tareas { get; set; } = new List<Tarea>();
+
     }
 }
